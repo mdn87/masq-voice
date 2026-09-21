@@ -1,11 +1,58 @@
 # masq-voice
 
-Spoken commands for an AI coding assistant running in a desktop app: what you can say, what
-each phrase does, how to measure how fast it responds, and how to fix it when it goes quiet.
+Talk to an AI coding assistant running in a desktop app. Voice is the main way in: you say a
+wake phrase, then either a short command or an ordinary request, and the assistant answers
+out loud. The keyboard is the fallback, not the default.
 
-This repository is a seed. It holds the command vocabulary and the operating notes. It does
-not hold the listener or the speech hook themselves; those are separate programs, described
-under "What this talks to" below.
+## Start here: what to say
+
+Say the wake phrase, then the command: "hey claude, status". The wake phrase names the
+assistant you are addressing, so "hey codex" sends your request to a different assistant.
+A two-tone cue confirms the wake phrase was heard.
+
+| You want to | Say | Reaches the assistant? |
+|---|---|---|
+| Ask for anything | the wake phrase, then your request in plain words | Yes, as a prompt |
+| Know whether it is still working | "status", "are you done" | No |
+| Cut off speech that is playing | "stop", "be quiet" | No |
+| Change the speech volume | "louder", "quieter" | No |
+| Turn spoken replies off or on | "mute", "unmute" | No |
+| Change the speaking voice | "use sonia", "list voices" | No |
+| Approve a plan the assistant proposed | "go ahead", "approved" | Yes, as `Go ahead.` |
+| Halt a plan | "hold on", "stop the plan" | Yes, as a fixed halt message |
+| Change your mind after waking it | "never mind", "cancel that" | No, nothing is sent |
+| Change the writing style | "plain english mode", "persona off" | Yes, as a slash command |
+| Check the microphone | "sound check", "can you hear me" | No |
+| Find out how fast the last turn was | "latency report" | No |
+
+Commands marked "No" are run by the listener itself. They cost no tokens and they work while
+the assistant is busy, which is the point: you can always stop it, quiet it, or ask what it is
+doing without waiting for a turn.
+
+The full list, 123 phrases for 36 actions, is in [docs/voice-commands.md](docs/voice-commands.md).
+
+### How a turn sounds
+
+1. You: the wake phrase. It: a two-tone cue.
+2. You: the command or request, then "end turn" or a few seconds of silence.
+3. It: reads back what it heard, when readback is switched on. If the readback would run
+   past about 20 seconds it says the command was too long instead of reading part of it.
+4. It: speaks one or two closing sentences when the work is done, ending with a fixed handoff
+   cue so you know the floor is yours again.
+
+### Speaking so that commands match
+
+- Keep commands short and exact. "turn it down" matches. "can you turn yourself down just a
+  little bit" does not reach the 85 % match threshold and goes to the assistant as an ordinary
+  prompt instead, which is slower and costs a turn.
+- Say a command on its own. A command buried inside a longer sentence is treated as a request.
+- Anything that is not a command is a request. You do not need special wording for requests.
+
+## What this repository is
+
+A seed. It holds the command vocabulary and the operating notes. It does not hold the
+listener or the speech hook themselves; those are separate programs, described under "What
+this talks to" below.
 
 ## What is here
 
