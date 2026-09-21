@@ -21,7 +21,7 @@ A two-tone cue confirms the wake phrase was heard.
 | Approve a plan the assistant proposed | "go ahead", "approved" | Yes, as `Go ahead.` |
 | Halt a plan | "hold on", "stop the plan" | Yes, as a fixed halt message |
 | Change your mind after waking it | "never mind", "cancel that" | No, nothing is sent |
-| Change the writing style | "plain english mode", "persona off" | Yes, as a slash command |
+| Change the writing style | "plain english mode", "persona off" | Yes, as a prompt for Codex or a slash command for Claude |
 | Check the microphone | "sound check", "can you hear me" | No |
 | Find out how fast the last turn was | "latency report" | No |
 
@@ -30,6 +30,12 @@ the assistant is busy, which is the point: you can always stop it, quiet it, or 
 doing without waiting for a turn.
 
 The full list, 123 phrases for 36 actions, is in [docs/voice-commands.md](docs/voice-commands.md).
+
+For **"hey Codex"**, install the [Codex voice adapter](docs/codex-voice.md) into the
+existing listener. It routes requests to one pinned Codex desktop task, uses brief
+plain-English spoken replies, and gives Codex its own volume, voice, and mute
+settings. "Hey Claude" keeps its configured destination. The shared stop command
+can interrupt either assistant's current audio.
 
 ### How a turn sounds
 
@@ -50,9 +56,9 @@ The full list, 123 phrases for 36 actions, is in [docs/voice-commands.md](docs/v
 
 ## What this repository is
 
-A seed. It holds the command vocabulary and the operating notes. It does not hold the
-listener or the speech hook themselves; those are separate programs, described under "What
-this talks to" below.
+It holds the command vocabulary, operating notes, and a Codex adapter for an existing
+listener. It does not hold the listener or the speech hook themselves; those are separate
+programs, described under "What this talks to" below.
 
 ## What is here
 
@@ -63,6 +69,9 @@ this talks to" below.
 | `docs/latency-report.md` | How to ask "how fast was that" and how to read the timing trail. |
 | `docs/operations.md` | Runbook: faults that have actually happened, their causes, and the fix for each. |
 | `scripts/gen_commands.py` | Regenerates `docs/voice-commands.md` from an aliases file. |
+| `integration/_masq_voice.py` | Routes known voice controls to Codex's private speech settings and reads its task status. |
+| `scripts/setup_codex.py` | Previews or installs the adapter with backups, preserving existing listener changes. |
+| `docs/codex-voice.md` | Codex controls, installation, verification, and rollback. |
 
 ## How a spoken command travels
 
@@ -75,11 +84,12 @@ this talks to" below.
    punctuation is dropped, so short exact phrases match and long natural sentences do not.
 5. A matched alias is either run locally by the listener (no model turn, no tokens) or
    replaced by exact text and sent as a prompt. Anything unmatched is sent as a prompt as is.
-6. Prompts are pasted into the assistant's message box through the operating system's
-   accessibility tree, then confirmed by finding the text in the session transcript. Delivery
-   is pinned to one named session on purpose, so speech can never land in the wrong task.
-7. When the assistant finishes, a stop hook reads its closing `Spoken:` line aloud. The
-   listener mutes itself while that speech plays so it does not transcribe its own voice.
+6. Claude prompts use its checked accessibility composer and transcript receipt. Codex
+   prompts use the installed desktop app's task transport. Each assistant has a pinned
+   destination; an uncertain delivery is recorded without automatic replay.
+7. Claude's stop hook reads its closing `Spoken:` line. Codex's voice context asks it to
+   speak one short summary through the exchange helper. Both use the speech floor, which
+   pauses listening during playback and rejects speech superseded by a new contribution.
 
 ## Alias format
 
