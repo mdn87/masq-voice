@@ -1,0 +1,815 @@
+{
+  "renaissance fair mode": "/masq:persona renfaire",
+  "renaissance fair": "/masq:persona renfaire",
+  "renfaire mode": "/masq:persona renfaire",
+  "plain english mode": "/masq:persona plain",
+  "caveman mode": "/masq:persona caveman",
+  "dean mode": "/masq:persona dean",
+  "persona off": "/masq:persona clear",
+  "normal mode": "/masq:persona clear",
+  "persona status": "/masq:persona status",
+  "use the female voice": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "zira"
+    ]
+  },
+  "use zira": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "zira"
+    ]
+  },
+  "use the male voice": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "david"
+    ]
+  },
+  "use david": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "david"
+    ]
+  },
+  "list voices": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voices"
+    ],
+    "speak_output": true
+  },
+  "stop": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "stop"
+    ]
+  },
+  "stop talking": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "stop"
+    ]
+  },
+  "shut up": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "stop"
+    ]
+  },
+  "be quiet": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "stop"
+    ]
+  },
+  "quiet": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "stop"
+    ]
+  },
+  "volume up": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "volume",
+      "up"
+    ]
+  },
+  "louder": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "volume",
+      "up"
+    ]
+  },
+  "speak up": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "volume",
+      "up"
+    ]
+  },
+  "volume down": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "volume",
+      "down"
+    ]
+  },
+  "quieter": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "volume",
+      "down"
+    ]
+  },
+  "turn it down": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "volume",
+      "down"
+    ]
+  },
+  "mute": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "disable"
+    ]
+  },
+  "stop speaking to me": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "disable"
+    ]
+  },
+  "voice off": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "disable"
+    ]
+  },
+  "unmute": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "enable"
+    ]
+  },
+  "voice on": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "enable"
+    ]
+  },
+  "start speaking to me": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "enable"
+    ]
+  },
+  "go ahead": "Go ahead.",
+  "proceed": "Go ahead.",
+  "do it": "Go ahead.",
+  "approved": "Go ahead.",
+  "make it so": "Go ahead.",
+  "green light": "Go ahead.",
+  "yes go ahead": "Go ahead.",
+  "go for it": "Go ahead.",
+  "hold on": "Hold on. Do not proceed with that plan. Wait for new instructions.",
+  "wait": "Hold on. Do not proceed with that plan. Wait for new instructions.",
+  "hold that": "Hold on. Do not proceed with that plan. Wait for new instructions.",
+  "cancel that": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "ping"
+    ],
+    "speak_output": true
+  },
+  "never mind": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "ping"
+    ],
+    "speak_output": true
+  },
+  "do not proceed": "Hold on. Do not proceed with that plan. Wait for new instructions.",
+  "stop the plan": "Hold on. Do not proceed with that plan. Wait for new instructions.",
+  "gate off": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "gate",
+      "off"
+    ],
+    "speak_output": true
+  },
+  "gate on": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "gate",
+      "on"
+    ],
+    "speak_output": true
+  },
+  "gate status": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "gate",
+      "status"
+    ],
+    "speak_output": true
+  },
+  "use aria": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "aria"
+    ]
+  },
+  "use jenny": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "jenny"
+    ]
+  },
+  "use emma": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "emma"
+    ]
+  },
+  "use ava": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "ava"
+    ]
+  },
+  "use guy": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "guy"
+    ]
+  },
+  "use andrew": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "andrew"
+    ]
+  },
+  "use brian": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "brian"
+    ]
+  },
+  "use christopher": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "christopher"
+    ]
+  },
+  "use sonia": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "sonia"
+    ]
+  },
+  "use libby": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "libby"
+    ]
+  },
+  "use ryan": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "ryan"
+    ]
+  },
+  "use natasha": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "natasha"
+    ]
+  },
+  "use the neural voice": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "aria"
+    ]
+  },
+  "use the new voice": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "aria"
+    ]
+  },
+  "use the old voice": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "zira"
+    ]
+  },
+  "use the classic voice": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "zira"
+    ]
+  },
+  "use the british voice": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "sonia"
+    ]
+  },
+  "use the australian voice": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "voice",
+      "natasha"
+    ]
+  },
+  "are you still working": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "still working": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "you still working": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "are you busy": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "are you done": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "are you done yet": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "you done yet": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "are you finished": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "is it done": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "did you finish": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "what are you doing": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "what are you working on": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "still there": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "are you still there": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "you still there": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "are you still going": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "status": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "status check": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "status report": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "how's it going": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "what's your status": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "where are you at": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "are you working on something": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "busy"
+    ],
+    "speak_output": true
+  },
+  "latency report": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "latency",
+      "spoken"
+    ],
+    "speak_output": true
+  },
+  "how fast was that": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "latency",
+      "spoken"
+    ],
+    "speak_output": true
+  },
+  "how long did that take": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "latency",
+      "spoken"
+    ],
+    "speak_output": true
+  },
+  "timing report": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "latency",
+      "spoken"
+    ],
+    "speak_output": true
+  },
+  "latency check": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "latency",
+      "spoken"
+    ],
+    "speak_output": true
+  },
+  "do not do anything": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "ping"
+    ],
+    "speak_output": true
+  },
+  "do nothing": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "ping"
+    ],
+    "speak_output": true
+  },
+  "do nothing at all": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "ping"
+    ],
+    "speak_output": true
+  },
+  "don't do anything": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "ping"
+    ],
+    "speak_output": true
+  },
+  "don't do anything at all": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "ping"
+    ],
+    "speak_output": true
+  },
+  "don't do it": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "ping"
+    ],
+    "speak_output": true
+  },
+  "just answer": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "ping"
+    ],
+    "speak_output": true
+  },
+  "just respond": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "ping"
+    ],
+    "speak_output": true
+  },
+  "nevermind": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "ping"
+    ],
+    "speak_output": true
+  },
+  "no op": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "ping"
+    ],
+    "speak_output": true
+  },
+  "noop": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "ping"
+    ],
+    "speak_output": true
+  },
+  "ping": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "ping"
+    ],
+    "speak_output": true
+  },
+  "test command": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "ping"
+    ],
+    "speak_output": true
+  },
+  "testing": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "ping"
+    ],
+    "speak_output": true
+  },
+  "sound check": {
+    "run": [
+      "node",
+      "<LISTENER_DIR>/sound_check.mjs"
+    ],
+    "speak_output": true
+  },
+  "mic check": {
+    "run": [
+      "node",
+      "<LISTENER_DIR>/sound_check.mjs"
+    ],
+    "speak_output": true
+  },
+  "audio check": {
+    "run": [
+      "node",
+      "<LISTENER_DIR>/sound_check.mjs"
+    ],
+    "speak_output": true
+  },
+  "check audio": {
+    "run": [
+      "node",
+      "<LISTENER_DIR>/sound_check.mjs"
+    ],
+    "speak_output": true
+  },
+  "can you hear me": {
+    "run": [
+      "node",
+      "<LISTENER_DIR>/sound_check.mjs"
+    ],
+    "speak_output": true
+  },
+  "are you listening": {
+    "run": [
+      "node",
+      "<LISTENER_DIR>/sound_check.mjs"
+    ],
+    "speak_output": true
+  },
+  "hearing test": {
+    "run": [
+      "node",
+      "<LISTENER_DIR>/sound_check.mjs"
+    ],
+    "speak_output": true
+  },
+  "master status": {
+    "run": [
+      "<PYTHON>",
+      "<LISTENER_DIR>/master_status.py"
+    ],
+    "speak_output": true
+  },
+  "master status master status": {
+    "run": [
+      "<PYTHON>",
+      "<LISTENER_DIR>/master_status.py"
+    ],
+    "speak_output": true
+  },
+  "next master status": {
+    "run": [
+      "<PYTHON>",
+      "<LISTENER_DIR>/master_status.py"
+    ],
+    "speak_output": true
+  },
+  "master status interned": {
+    "run": [
+      "<PYTHON>",
+      "<LISTENER_DIR>/master_status.py"
+    ],
+    "speak_output": true
+  },
+  "first master status roll call": {
+    "run": [
+      "<PYTHON>",
+      "<LISTENER_DIR>/master_status.py"
+    ],
+    "speak_output": true
+  },
+  "master status roll call": {
+    "run": [
+      "<PYTHON>",
+      "<LISTENER_DIR>/master_status.py"
+    ],
+    "speak_output": true
+  },
+  "roll call": {
+    "run": [
+      "<PYTHON>",
+      "<LISTENER_DIR>/master_status.py"
+    ],
+    "speak_output": true
+  }
+}

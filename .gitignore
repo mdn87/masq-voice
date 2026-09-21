@@ -1,0 +1,14 @@
+# Live config carries absolute paths from one machine. Commit aliases.example.json instead.
+aliases.json
+*.bak-*
+.env
+.env.*
+*.token
+*.key
+*.pem
+.local/
+.claude/
+__pycache__/
+*.pyc
+.venv/
+node_modules/
