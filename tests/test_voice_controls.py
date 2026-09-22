@@ -60,7 +60,8 @@ class SharedControlTests(unittest.TestCase):
         original_write = controls.write
 
         def fail_second(path, *args, **kwargs):
-            if Path(path) == self.codex:
+            # Windows runner temp paths can use an 8.3 alias; production resolves it.
+            if Path(path).resolve() == self.codex.resolve():
                 raise PermissionError("test failure")
             return original_write(path, *args, **kwargs)
 
@@ -134,7 +135,7 @@ class SharedControlTests(unittest.TestCase):
         self.assertEqual(controls.read(self.codex)["volume"], 10)
 
     def test_installed_control_vocabulary_matches_public_source(self):
-        aliases = json.loads((ROOT / "aliases.example.json").read_text())
+        aliases = json.loads((ROOT / "aliases.example.json").read_text(encoding="utf-8"))
         installed = setup.control_aliases({"custom": "Keep this custom command"}, "example/speak-response.mjs")
         self.assertEqual(installed.pop("custom"), "Keep this custom command")
         for phrase, command in installed.items():
