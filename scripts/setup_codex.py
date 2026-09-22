@@ -42,23 +42,29 @@ def prepare_exchange(text):
                         '                from _masq_voice import PLAIN_STYLE\n'
                         '                policy += " " + PLAIN_STYLE\n'
                         '            policy += (')
-    text = replace_once(text,
-                        '        subprocess.run([self.config["node"], self.config["speech_hook"], "say", text[:500]],',
-                        '        if self.config.get("masq_voice"):\n'
-                        '            from _masq_voice import speak\n'
-                        '            speak(self.config, text[:500], environment)\n'
-                        '            return\n'
-                        '        subprocess.run([self.config["node"], self.config["speech_hook"], "say", text[:500]],')
-    text = replace_once(text,
-                        '        self.save(event)\n        return event\n\n    def say(',
-                        '        event["delivery_finished_at"] = time.time()\n'
-                        '        self.save(event)\n        return event\n\n    def say(')
+    branch = ('        if self.config.get("masq_voice"):\n'
+              '            from _masq_voice import speak\n'
+              '            speak(self.config, text, environment)\n'
+              '            return\n')
+    old_branch = branch.replace('speak(self.config, text, environment)',
+                                'speak(self.config, text[:500], environment)')
+    if branch not in text:
+        if old_branch in text:
+            text = replace_once(text, old_branch, branch)
+        else:
+            anchor = '        subprocess.run([self.config["node"], self.config["speech_hook"], "say", text[:500]],'
+            text = replace_once(text, anchor, branch + anchor)
+    if '        event["delivery_finished_at"] = time.time()\n' not in text:
+        text = replace_once(text,
+                            '        self.save(event)\n        return event\n\n    def say(',
+                            '        event["delivery_finished_at"] = time.time()\n'
+                            '        self.save(event)\n        return event\n\n    def say(')
     ast.parse(text)
     return text
 
 
 def private_speech_settings(source, old_thread):
-    # Copy playback settings only, never hooks, approval state or service credentials.
+    # Copy playback and explicit coordinator references, never raw credentials or hooks.
     fields = ("engine", "edgeVoice", "voice", "rate", "edgeRate", "volume",
               "outputDevice", "edgePython", "player", "summary", "summaryChars",
               "summarySentences", "maxChars")
@@ -74,7 +80,28 @@ def private_speech_settings(source, old_thread):
     result.setdefault("voice", "Microsoft David Desktop")
     result.setdefault("volume", 50)
     result["masqMuted"] = False
+    inherit_floor(result, source)
     return result
+
+
+def inherit_floor(settings, source):
+    floor = source.get("speechFloor")
+    if floor is None:
+        return
+    if not isinstance(floor, dict) or not all(isinstance(floor.get(k), str) and floor[k]
+                                            for k in ("url", "tokenFile")):
+        raise ValueError("The source speaking-floor configuration is incomplete")
+    # tokenFile is a private reference; never read or copy the token's contents.
+    settings["speechFloor"] = {k: floor[k] for k in ("url", "tokenFile", "host") if k in floor}
+
+
+def control_aliases(aliases, hook_path):
+    commands = {"voice louder": ["volume", "up"], "voice quieter": ["volume", "down"],
+                "stop speaking": ["stop"], "voice level": ["volume"],
+                "voice level five": ["volume", "5"], "volume five": ["volume", "5"]}
+    for phrase, command in commands.items():
+        aliases[phrase] = {"run": ["node", str(hook_path), *command]}
+    return aliases
 
 
 def prepare(directory, thread_id, source_path):
@@ -92,16 +119,23 @@ def prepare(directory, thread_id, source_path):
         listener_path: prepare_listener(listener_path.read_text(encoding="utf-8-sig")),
         exchange_code: prepare_exchange(exchange_code.read_text(encoding="utf-8-sig")),
         directory / "_masq_voice.py": (ROOT / "integration/_masq_voice.py").read_text(encoding="utf-8"),
+        directory / "_voice_controls.py": (ROOT / "integration/_voice_controls.py").read_text(encoding="utf-8"),
     }
     speech_path = directory / ".local/masq-voice/codex-tts.json"
     if speech_path.exists():
         speech = read_json(speech_path)
+        inherit_floor(speech, read_json(source_path))
     else:
         speech = private_speech_settings(read_json(source_path), config.get("codex_thread_id", ""))
     changes[speech_path] = json.dumps(speech, indent=2) + "\n"
     config.update(enabled=True, codex_thread_id=thread_id, default_respondent="codex",
-                  broadcast_observations=False, speech_config=speech_path.as_posix(), masq_voice=True)
+                  broadcast_observations=False, speech_config=speech_path.as_posix(), masq_voice=True,
+                  shared_speech_config=source_path.resolve().as_posix(),
+                  voice_control_state_dir=(directory / ".local/voice-controls").as_posix())
     changes[exchange_path] = json.dumps(config, indent=2) + "\n"
+    alias_path = directory / "aliases.json"
+    if alias_path.exists():
+        changes[alias_path] = json.dumps(control_aliases(read_json(alias_path), config["speech_hook"]), indent=2) + "\n"
     return changes
 
 

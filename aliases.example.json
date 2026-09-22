@@ -811,5 +811,51 @@
       "<LISTENER_DIR>/master_status.py"
     ],
     "speak_output": true
+  },
+  "voice louder": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "volume",
+      "up"
+    ]
+  },
+  "voice quieter": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "volume",
+      "down"
+    ]
+  },
+  "stop speaking": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "stop"
+    ]
+  },
+  "voice level": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "volume"
+    ]
+  },
+  "voice level five": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "volume",
+      "5"
+    ]
+  },
+  "volume five": {
+    "run": [
+      "node",
+      "<HOOKS_DIR>/speak-response.mjs",
+      "volume",
+      "5"
+    ]
   }
 }

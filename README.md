@@ -15,7 +15,7 @@ A two-tone cue confirms the wake phrase was heard.
 | Ask for anything | the wake phrase, then your request in plain words | Yes, as a prompt |
 | Know whether it is still working | "status", "are you done" | No |
 | Cut off speech that is playing | "stop", "be quiet" | No |
-| Change the speech volume | "louder", "quieter" | No |
+| Change the shared speech volume | "voice louder", "voice quieter", "voice level five" | No |
 | Turn spoken replies off or on | "mute", "unmute" | No |
 | Change the speaking voice | "use sonia", "list voices" | No |
 | Approve a plan the assistant proposed | "go ahead", "approved" | Yes, as `Go ahead.` |
@@ -29,13 +29,14 @@ Commands marked "No" are run by the listener itself. They cost no tokens and the
 the assistant is busy, which is the point: you can always stop it, quiet it, or ask what it is
 doing without waiting for a turn.
 
-The full list, 123 phrases for 36 actions, is in [docs/voice-commands.md](docs/voice-commands.md).
+The full list, 129 phrases for 38 actions, is in [docs/voice-commands.md](docs/voice-commands.md).
 
 For **"hey Codex"**, install the [Codex voice adapter](docs/codex-voice.md) into the
 existing listener. It routes requests to one pinned Codex desktop task, uses brief
-plain-English spoken replies, and gives Codex its own volume, voice, and mute
-settings. "Hey Claude" keeps its configured destination. The shared stop command
-can interrupt either assistant's current audio.
+plain-English spoken replies, and keeps Codex's voice and mute settings separate.
+Both assistants use one local Voice level control and the configured speaking floor.
+"Hey Claude" keeps its configured destination. The shared stop command interrupts
+current and queued speech without cancelling agent work.
 
 ### How a turn sounds
 
@@ -64,12 +65,13 @@ programs, described under "What this talks to" below.
 
 | Path | What it is |
 |---|---|
-| `aliases.example.json` | The full phrase list: 123 spoken phrases mapped to 36 actions. Machine paths are replaced by placeholders. |
+| `aliases.example.json` | The full phrase list: 129 spoken phrases mapped to 38 actions. Machine paths are replaced by placeholders. |
 | `docs/voice-commands.md` | The same list as a readable table, generated from the JSON. |
 | `docs/latency-report.md` | How to ask "how fast was that" and how to read the timing trail. |
 | `docs/operations.md` | Runbook: faults that have actually happened, their causes, and the fix for each. |
 | `scripts/gen_commands.py` | Regenerates `docs/voice-commands.md` from an aliases file. |
 | `integration/_masq_voice.py` | Routes known voice controls to Codex's private speech settings and reads its task status. |
+| `integration/_voice_controls.py` | Serializes shared five-point level changes, verifies both profiles, and runs local Stop. |
 | `scripts/setup_codex.py` | Previews or installs the adapter with backups, preserving existing listener changes. |
 | `docs/codex-voice.md` | Codex controls, installation, verification, and rollback. |
 
