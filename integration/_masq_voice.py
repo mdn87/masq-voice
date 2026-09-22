@@ -43,6 +43,17 @@ def write_json(path, value):
 def select_alias(alias, contribution, config):
     """Retarget known controls after wake detection, before local execution."""
     from _voice_exchange import respondent
+    if isinstance(alias, dict) and config.get("shared_speech_config"):
+        argv = alias.get("run", [])
+        script = argv[1].replace("\\", "/").rsplit("/", 1)[-1] if len(argv) > 1 else ""
+        command = argv[2:]
+        if script == "speak-response.mjs" and command and command[0] in ("volume", "stop"):
+            run = [sys.executable, str(Path(__file__).with_name("_voice_controls.py")), *command]
+            if contribution.get("id"):
+                run += ["--request-id", contribution["id"]]
+            if command[0] == "volume":
+                run += ["--speak"]
+            return {"run": run}
     who = respondent(contribution["text"], respondent(
         contribution.get("wake", ""), config.get("default_respondent", "codex")))
     if who != "codex" or not config.get("masq_voice"):
@@ -89,7 +100,15 @@ def hook(config, args, environment=None):
 def speak(config, text, environment=None):
     settings = read_json(config["speech_config"])
     if not settings.get("masqMuted", False):
-        hook(config, ["say", text[:500]], environment)
+        return hook(config, ["say", bounded_speech(text)], environment)
+
+
+def bounded_speech(text, limit=500):
+    if len(text) <= limit:
+        return text
+    notice = " The rest is in the written reply."
+    prefix = text[:limit - len(notice)].rsplit(" ", 1)[0].rstrip(" ,;:-")
+    return prefix + notice
 
 
 def status_text(config):

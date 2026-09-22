@@ -222,6 +222,25 @@ class SetupTests(unittest.TestCase):
         speak.assert_called_once_with(exchange.config, "A short reply", {"LUGOS_SPEECH_STAMP": "original"})
         self.assertIn("plain, conversational English", exchange.message({}, "codex"))
 
+    def test_existing_installed_branch_passes_full_reply_to_bounding_helper(self):
+        installed = setup.prepare_exchange(EXCHANGE).replace(
+            'speak(self.config, text, environment)', 'speak(self.config, text[:500], environment)')
+        updated = setup.prepare_exchange(installed)
+        self.assertNotIn('speak(self.config, text[:500], environment)', updated)
+        self.assertEqual(setup.prepare_exchange(updated), updated)
+        scope = {}
+        exec(updated, scope)
+        exchange = scope["VoiceExchange"]()
+        exchange.config = {"masq_voice": True}
+        with patch.object(voice, "speak") as speak:
+            exchange.say("word " * 200, {})
+        self.assertEqual(len(speak.call_args.args[1]), 1000)
+
+    def test_reinstall_preserves_newer_exchange_helpers(self):
+        installed = setup.prepare_exchange(EXCHANGE).replace(
+            '    def say(', '    def pending_feedback(self, event):\n        pass\n\n    def say(')
+        self.assertEqual(setup.prepare_exchange(installed), installed)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -16,12 +16,14 @@ Use the same aliases in [voice-commands.md](voice-commands.md), preceded by "hey
 
 | Say after the wake phrase | Effect |
 |---|---|
-| "volume down", "quieter", "turn it down" | Lower Codex speech gain by 20 points, bounded at zero. |
-| "volume up", "louder", "speak up" | Raise Codex speech gain by 20 points, bounded at 100. |
+| "voice quieter", "volume down", "quieter", "turn it down" | Lower both voices by five points, bounded at zero. |
+| "voice louder", "volume up", "louder", "speak up" | Raise both voices by five points, bounded at 100. |
+| "voice level" | Read the shared level after checking both profiles. |
+| "voice level five", "volume five" | Set both voices to five. |
 | "mute", "voice off" | Stop current shared speech and silence future Codex replies. |
 | "unmute", "voice on" | Enable Codex replies with its saved volume and voice. |
 | "use Guy", "use Sonia", "use David", "list voices" | Select or list voices for Codex. |
-| "stop talking" | Stop current speech through the shared speech floor. This can interrupt either assistant's audio; it does not cancel agent work. |
+| "stop speaking", "stop talking" | Stop current and queued speech and hold the floor quiet until the next user turn. It does not cancel agent work. |
 | "are you still working", "status" | Read the pinned Codex task's current activity without a model turn. |
 | "testing", "test command" | Acknowledge locally without sending a model prompt. |
 | "sound check", "mic check" | Read the existing listener health report in Codex's voice. |
@@ -29,10 +31,13 @@ Use the same aliases in [voice-commands.md](voice-commands.md), preceded by "hey
 | "latency report" | Report the last recorded Codex delivery duration, excluding recognition and reply time. |
 | "plain English mode", "normal mode" | Ask Codex to use brief, plain English. |
 
-Claude's aliases and settings keep their existing behavior. Codex volume, voice,
-and mute state are stored separately from Claude's configuration. Shared "stop"
-cancels current playback for the room; future mute state is per assistant. Muting
-speech leaves microphone input and task execution active.
+Both wake phrases use the shared level and Stop controls locally, without a model
+turn. Level changes update both configurations and any existing session-level gain
+overrides, then read them back. Voices and mute settings remain separate. If levels
+disagree, set an explicit level before using relative changes. Repeated contribution
+IDs cannot apply the same step twice. Partial writes are reported as partial; a
+feedback timeout does not undo a verified gain change. Muting speech leaves microphone
+input and task execution active.
 
 Claude's `gate` controls do not change Codex permissions. When addressed to Codex,
 they explain that distinction locally. Other persona aliases report Codex's plain
@@ -78,13 +83,32 @@ listener's existing changes and rejects unfamiliar integration boundaries.
    question to test task delivery and the spoken reply. Verify that the receipt
    names Codex and records `accepted`; that proves submission, not completion.
 
-Setup writes `_masq_voice.py`, patches the listener's alias selection and the
+Setup writes `_masq_voice.py` and `_voice_controls.py`, adds the exact control phrases
+to an existing alias file, patches the listener's alias selection and the
 exchange's Codex speech path, and updates `voice-exchange.json`. It pins the task,
 disables observer copies, and creates `.local/masq-voice/codex-tts.json`. The source
-TTS config is read only: selected audio fields and the previous Codex voice profile
-are copied without session mappings or service credentials. If no previous profile
+TTS config is read only during setup: selected audio fields, the previous Codex
+voice profile, and explicit `speechFloor` URL/token-file/host references are copied.
+The token contents and unrelated service credentials are never copied. If no previous profile
 matches, the default is Guy with David as the native fallback. Reinstallation
-preserves existing Codex volume, mute state, voice, and output device.
+preserves existing Codex volume, mute state, voice, and output device, and refreshes
+the speaking-floor references. Set a common initial level explicitly after installation:
+
+```powershell
+python <LISTENER_DIR>/_voice_controls.py volume 5
+```
+
+The two profiles must name the intended output device. This installer does not
+change Windows defaults or Sonar channels. The installed speech-floor hook must
+support managed playback for both profiles. Stamped speech without a configured
+floor must fail quietly instead of taking the unmanaged playback path.
+
+Replies longer than 500 characters end with a notice that the rest is in writing.
+The original turn is claimed once before playback; a timeout never triggers an
+automatic replay. The floor worker's `speech-results.jsonl` in the temporary
+`claude-tts` directory distinguishes completed, rejected, interrupted, expired, and
+failed requests. Its timestamps describe player processes, not acoustic onset;
+`audibility: not_measured` requires a separate listening check.
 
 The existing bundled Codex desktop transport is used for task delivery and status.
 It is an installed-app integration and may need updating after a Codex app update.
@@ -98,7 +122,7 @@ whose configuration and trust requirements are outside this adapter.
 ```powershell
 python -m unittest discover -s tests -v
 python <LISTENER_DIR>/_masq_voice.py busy
-python <LISTENER_DIR>/_masq_voice.py volume
+python <LISTENER_DIR>/_voice_controls.py volume
 ```
 
 The last two commands read status and saved gain without speaking or starting a
