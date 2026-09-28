@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 import sys
 import tempfile
+import time
 import types
 import unittest
 from unittest.mock import Mock, patch
@@ -117,6 +118,27 @@ class VoiceTests(unittest.TestCase):
             })}]}))
         with patch.dict(sys.modules, {"_voice_exchange": desktop}), self.assertRaises(RuntimeError):
             voice.status_text(self.config)
+
+    def receipt(self, name, respondent="codex", state="discarded:superseded contribution", at=None, text="Tests passed."):
+        at = time.time() if at is None else at
+        voice.write_json(Path(self.config["state_dir"]) / name, {
+            "respondent": respondent, "result_text": text, "result_at": at, "speech_state": state})
+
+    def test_recall_speaks_the_newest_cut_off_codex_reply(self):
+        now = time.time()
+        self.receipt("a.json", at=now - 60, text="Older answer.")
+        self.receipt("b.json", state="interrupted", at=now - 10, text="Newer answer.")
+        self.receipt("c.json", state="completed", at=now, text="Heard already.")
+        self.receipt("d.json", respondent="claude", at=now, text="Another assistant.")
+        first = voice.control(self.config, "recall", [])
+        self.assertEqual(first, "Earlier: Newer answer.")
+        self.assertEqual(voice.control(self.config, "recall", []), first)
+        self.hook.assert_not_called()
+
+    def test_recall_with_nothing_stored_says_one_sentence(self):
+        self.receipt("old.json", at=time.time() - 25 * 60 * 60)
+        self.receipt("heard.json", state="completed")
+        self.assertEqual(voice.control(self.config, "recall", []), "No Codex reply was cut off in the last day.")
 
     def test_latency_reports_delivery_only(self):
         voice.write_json(Path(self.config["state_dir"]) / "receipt.json", {

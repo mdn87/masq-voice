@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import time
 import uuid
 
 HIDDEN = getattr(subprocess, "CREATE_NO_WINDOW", 0)
@@ -159,6 +160,34 @@ def latency_text(config):
     return "There is no recorded Codex voice delivery yet."
 
 
+RESULT_TTL_S = 24 * 60 * 60
+
+
+def recall_text(config, now=None):
+    # The newest Codex reply whose speech was discarded, interrupted or expired. It is
+    # spoken only on request, under the recall's own floor stamp.
+    now = time.time() if now is None else now
+    newest = None
+    for path in Path(config["state_dir"]).glob("*.json"):
+        try:
+            if now - path.stat().st_mtime > RESULT_TTL_S:
+                continue
+            event = read_json(path)
+        except (OSError, ValueError):
+            continue
+        text, at = event.get("result_text"), event.get("result_at")
+        state = str(event.get("speech_state", ""))
+        if event.get("respondent") != "codex" or not isinstance(text, str) or not text.strip():
+            continue
+        if not isinstance(at, (int, float)) or now - at > RESULT_TTL_S:
+            continue
+        if not (state.startswith("discarded:") or state in ("interrupted", "expired")):
+            continue
+        if newest is None or at > newest[0]:
+            newest = (at, text)
+    return "Earlier: " + newest[1] if newest else "No Codex reply was cut off in the last day."
+
+
 def control(config, action, arguments):
     # Validate the private settings before any mutation or playback.
     speech_environment(config)
@@ -210,6 +239,8 @@ def control(config, action, arguments):
         return "Codex heard the test."
     if action == "busy":
         return status_text(config)
+    if action == "recall":
+        return recall_text(config)
     if action == "latency":
         return latency_text(config)
     if action == "gate":
