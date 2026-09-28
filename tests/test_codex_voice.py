@@ -49,23 +49,26 @@ class VoiceTests(unittest.TestCase):
         voice.write_json(self.speech, {"volume": 50, "engine": "edge", "masqMuted": False})
         self.config = {"masq_voice": True, "codex_thread_id": "task-example",
                        "speech_config": str(self.speech), "speech_hook": "speech-hook.mjs",
-                       "node": "node", "state_dir": str(self.root / "receipts")}
+                       "node": "node", "state_dir": str(self.root / "receipts"),
+                       "voice_control_state_dir": str(self.root / "controls")}
         self.hook = patch.object(voice, "hook").start()
         self.addCleanup(patch.stopall)
 
     def test_volume_changes_only_private_codex_settings(self):
         before = self.source.read_bytes()
+        # The shared level writer applies the default ten-point step to Codex only.
         voice.control(self.config, "volume", ["down"])
-        self.assertEqual(voice.read_json(self.speech)["volume"], 30)
+        self.assertEqual(voice.read_json(self.speech)["volume"], 40)
         self.assertEqual(self.source.read_bytes(), before)
-        self.hook.assert_called_once_with(self.config, ["say", "Codex volume 30."], None)
+        self.hook.assert_called_once_with(self.config, ["say", "Level 40."], None)
 
     def test_volume_clamps_and_rejects_invalid_input(self):
         voice.control(self.config, "volume", ["0"])
         voice.control(self.config, "volume", ["down"])
         self.assertEqual(voice.read_json(self.speech)["volume"], 0)
+        self.assertEqual(voice.control(self.config, "volume", ["101"]), "Level 100.")
         with self.assertRaises(ValueError):
-            voice.control(self.config, "volume", ["101"])
+            voice.control(self.config, "volume", ["loud"])
 
     def test_mute_blocks_reply_and_keeps_global_settings(self):
         before = self.source.read_bytes()

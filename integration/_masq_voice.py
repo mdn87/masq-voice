@@ -3,6 +3,7 @@ import argparse
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 import time
@@ -41,9 +42,20 @@ def write_json(path, value):
     temporary.replace(path)
 
 
+# "yourself" names the addressed assistant. Everything else, including a bare level
+# command such as "volume up", changes both voices.
+SELF_SCOPE = re.compile(r"\b(?:yourself|your (?:voice|volume|level)|turn you (?:up|down))\b", re.I)
+
+
+def spoken_scope(text):
+    return "self" if SELF_SCOPE.search(text or "") else "both"
+
+
 def select_alias(alias, contribution, config):
     """Retarget known controls after wake detection, before local execution."""
     from _voice_exchange import respondent
+    who = respondent(contribution["text"], respondent(
+        contribution.get("wake", ""), config.get("default_respondent", "codex")))
     if isinstance(alias, dict) and config.get("shared_speech_config"):
         argv = alias.get("run", [])
         script = argv[1].replace("\\", "/").rsplit("/", 1)[-1] if len(argv) > 1 else ""
@@ -53,10 +65,11 @@ def select_alias(alias, contribution, config):
             if contribution.get("id"):
                 run += ["--request-id", contribution["id"]]
             if command[0] == "volume":
-                run += ["--speak"]
+                # One level writer for both assistants; the confirmation is spoken in the
+                # addressed assistant's voice.
+                scope = alias.get("scope") or spoken_scope(contribution.get("text", ""))
+                run += ["--scope", scope, "--addressed", who, "--speak"]
             return {"run": run}
-    who = respondent(contribution["text"], respondent(
-        contribution.get("wake", ""), config.get("default_respondent", "codex")))
     if who != "codex" or not config.get("masq_voice"):
         return alias
     if isinstance(alias, str) and alias.startswith("/masq:persona "):
@@ -208,19 +221,16 @@ def control(config, action, arguments):
         return "Codex spoken replies are " + ("on." if action == "enable" else "off.")
     if action == "volume":
         value = arguments[0] if arguments else ""
-        current = settings.get("volume", 50)
         if not value:
-            return f"Codex volume is {current}."
-        if value in ("up", "down"):
-            next_volume = current + (20 if value == "up" else -20)
-        elif value.isdigit() and 0 <= int(value) <= 100:
-            next_volume = int(value)
-        else:
-            raise ValueError("Volume must be up, down, or 0 through 100")
-        settings["volume"] = max(0, min(100, next_volume))
-        write_json(config["speech_config"], settings)
-        answer = f"Codex volume {settings['volume']}."
-        speak(config, answer)
+            return f"Codex volume is {settings.get('volume', 50)}."
+        # The shared level writer applies the configured step to the Codex profile only.
+        from _voice_controls import confirmation, volume
+        result = volume(config, value, scope="self", addressed="codex")
+        if result["status"] != "verified":
+            raise RuntimeError("The Codex level change was not verified")
+        answer = confirmation(result)
+        if result["levels"]["codex"]:
+            speak(config, answer)
         return answer
     if action == "voice":
         value = arguments[0].lower() if arguments else ""
